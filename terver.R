@@ -2,7 +2,7 @@ sample = rnorm(10, -2, 1.96)
 sample2 = rnorm(10, -2, 1.96)
 print(sample)
 
-test = c(13.4, 13.32, 13.43, 13.5, 13.62, 
+testY = c(13.4, 13.32, 13.43, 13.5, 13.62, 
          13.28, 13.42, 13.44, 13.45, 13.35,
          13.37, 13.28, 13.48, 13.32, 13.56,
          13.51, 13.32, 13.34, 13.43, 13.38,
@@ -45,35 +45,16 @@ testX = c(13.39, 13.38, 13.49, 13.42, 13.57,
           13.42, 13.28, 13.56, 13.58, 13.45)
 
 source("basicMethods.R")
-getSampleDescription(testX, TRUE)
+getSampleDescription(testX, FALSE)
 autoHist(testX)
+#confidenceIntervalEV(testX, 0.01, 0.95, TRUE)
+#confidenceIntervalEVFull(testX, 0.95, TRUE)
+#confidenceIntervalDisp(testX, 0.95, TRUE)
+#normalDistributionCheck(testX, 0.05, TRUE)
+#homogeneityCheck(testX, testY, 0.05, TRUE)
+#dispAndEVCheck(testX, 13.5, 0.01, 0.05, TRUE)
+#meansEqualCheck(testX, testY, 0.05, TRUE)
+dispEqualCheck(testX, testY, 0.05, TRUE)
 
-sd = 0
-for(i in 1:length(sample)){
-  sd = sd + (sample[i] - mean(sample))^2
-}
-
-sd2 = 0
-for(i in 1:length(sample2)){
-  sd2 = sd2 + (sample2[i] - mean(sample2))^2
-}
-
-#дисперсия - квадрат стандартного отклонения
-
-print(sd/length(sample)) #смещенная
-print(sd/(length(sample) - 1)) #несмещенная
-print(var(test)) #несмещенная ++++++++
-print(var(test)*(length(test) - 1)/length(test)) #смещенная ++++++++
-print(var(sample2))
-
-print(median(test))
-print(min(test))
-print(max(test))
-print(max(test) - min(test))
-print(((var(test))^(1/2))/mean(test)*100) #коэф. вариации +++++
-print(100*(max(test) - min(test))/mean(test)) #коэф. осцилляции
-
-print(median(sample2))
-print(min(sample2))
-print(max(sample2))
-print(max(sample2) - min(sample2))
+#laplas = pnorm(1.96) - pnorm(-1.96) #функция Лапласа в точке
+#print(qnorm((1 + laplas)/2)) #аргумент функции Лапласа по значению функции
