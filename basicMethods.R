@@ -41,7 +41,7 @@ confidenceIntervalEV <- function(sample, disp, confidenceLevel, print = FALSE){
   
   mean = mean(sample)
   stdiv = (disp)^(1/2)
-  cGamma = qnorm((1 + confidenceLevel)/2)
+  cGamma = qnorm((1 + confidenceLevel)/2) #Лаплас
   
   left = mean - (cGamma*stdiv)/((length(sample))^(1/2))
   right = mean + (cGamma*stdiv)/((length(sample))^(1/2))
@@ -61,17 +61,7 @@ confidenceIntervalEVFull <- function(sample, confidenceLevel, print = FALSE){
   mean = mean(sample)
   stdiv = (var(sample))^(1/2)
   
-  prob = 0
-  student = 0.1
-  
-  #1 - (1 - conf)/2
-  #conf ~ P
-  #результат в виде t{alpha, k}, тест в R - односторонний
-  
-  while(prob < 1 - (1 - confidenceLevel)/2){
-    prob = pt(student, df = length(sample) - 1, ncp = 0) #нужна обратная функция
-    student = student + 0.0001
-  }
+  student = studentQuantile(confidenceLevel = confidenceLevel, n = length(sample) - 1, print = FALSE)
   
   left = mean - (student*stdiv)/((length(sample))^(1/2))
   right = mean + (student*stdiv)/((length(sample))^(1/2))
@@ -80,7 +70,6 @@ confidenceIntervalEVFull <- function(sample, confidenceLevel, print = FALSE){
     print("With unknown dispersion:")
     print(paste("Interval for expected value: (", left, "; ", right, ")", sep = ""))
     print(paste("With t{n-1} = ", student))
-    print(paste("With probability = ", prob))
     print(paste("With stdiv = ", stdiv))
   }
   
@@ -91,20 +80,10 @@ confidenceIntervalEVFull <- function(sample, confidenceLevel, print = FALSE){
 confidenceIntervalDisp <- function(sample, confidenceLevel, print = FALSE){
   
   disp = var(sample)
-  c1 = 0
   
-  prob = 0
-  while(prob < (1 - confidenceLevel)/2){
-    prob = pchisq(c1, df = length(sample) - 1)
-    c1 = c1 + 0.0001
-  }
-  
-  c2 = c1
-  prob = 0
-  while(prob < (1 + confidenceLevel)/2){
-    prob = pchisq(c2, df = length(sample) - 1)
-    c2 = c2 + 0.0001
-  }
+  c = chisqCoefs(confidenceLevel = confidenceLevel, n = length(sample) - 1)
+  c1 = c$c1
+  c2 = c$c2
   
   left = (length(sample) - 1)*disp/c2
   right = (length(sample) - 1)*disp/c1
@@ -151,7 +130,7 @@ normalDistributionCheck <- function(sample, alpha, print = FALSE){
   
   crit = 0
   prob = 0
-  while(prob < 1 - alpha){
+  while(prob < 1 - alpha){ #Перебираем точки, чтобы получить вероятность
     prob = pchisq(crit, df = steps - 3)
     crit = crit + 0.0001
   }
@@ -235,7 +214,7 @@ dispAndEVCheck <- function(sample, EV, disp, alpha, print = FALSE){
   #conf ~ P
   #результат в виде t{alpha, k}, тест в R - односторонний
   
-  while(prob < (1 - 10*alpha^2)){                  ###????????????????????
+  while(prob < (1 - alpha/2)){
     prob = pt(student, df = length(sample) - 1, ncp = 0) #нужна обратная функция
     student = student + 0.0001
   }
@@ -292,7 +271,7 @@ meansEqualCheck <- function(x, y, alpha, print = FALSE){
   #conf ~ P
   #результат в виде t{alpha, k}, тест в R - односторонний
   
-  while(prob < (1 - 10*alpha^2)){                  ###????????????????????
+  while(prob < (1 - alpha/2)){                  ###????????????????????
     prob = pt(student, df = 2*length(x) - 2, ncp = 0) #нужна обратная функция
     student = student + 0.0001
   }
@@ -314,24 +293,16 @@ dispEqualCheck <- function(x, y, alpha, print = FALSE){
   
   f = xdisp/ydisp
   
-  f1 = 0
+  fs = fisherCoefs(confidenceLevel = 1 - alpha, n = length(sample) - 1, m = length(sample) - 1)
+  f1 = fs$c1
+  f2 = fs$c2
   
-  confidenceLevel = alpha
-  
-  prob = 0
-  while(prob < (1 - confidenceLevel)/2){
-    prob = df(f1, length(x) - 1, length(x) - 1)
-    f1 = f1 + 0.0001
+  if(print){
+    print(paste("F = ", f))
+    print(fs)
   }
   
-  f2 = f1
-  prob = 0
-  while(prob < (1 + confidenceLevel)/2){
-    prob = df(f2, length(x) - 1, length(x) - 1)
-    f2 = f2 + 0.0001
-  }
-  
-  print(f1)
-  print(f2)
-  print(f)
+  print("Is VarX = VarY:")
+  if((f > f1) && (f < f2)) print("+")
+  else print("-")
 }

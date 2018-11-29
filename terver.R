@@ -45,8 +45,12 @@ testX = c(13.39, 13.38, 13.49, 13.42, 13.57,
           13.42, 13.28, 13.56, 13.58, 13.45)
 
 source("basicMethods.R")
+source("Quantiles.R")
 getSampleDescription(testX, FALSE)
 autoHist(testX)
+#chisqCoefs(confidenceLevel = 0.95, n = 100, print = TRUE)
+#studentQuantile(confidenceLevel = 0.95, n = 99, print = TRUE)
+#fisherCoefs(confidenceLevel = 0.95, n = 99, m = 99, print = TRUE)
 #confidenceIntervalEV(testX, 0.01, 0.95, TRUE)
 #confidenceIntervalEVFull(testX, 0.95, TRUE)
 #confidenceIntervalDisp(testX, 0.95, TRUE)
@@ -54,7 +58,7 @@ autoHist(testX)
 #homogeneityCheck(testX, testY, 0.05, TRUE)
 #dispAndEVCheck(testX, 13.5, 0.01, 0.05, TRUE)
 #meansEqualCheck(testX, testY, 0.05, TRUE)
-dispEqualCheck(testX, testY, 0.05, TRUE)
+#dispEqualCheck(testX, testY, 0.05, TRUE)
 
 #laplas = pnorm(1.96) - pnorm(-1.96) #функция Лапласа в точке
 #print(qnorm((1 + laplas)/2)) #аргумент функции Лапласа по значению функции
